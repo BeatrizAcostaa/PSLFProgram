@@ -36,7 +36,6 @@ try:
     WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "li#site-divinput-1.item")))
     element = driver.find_element(By.CSS_SELECTOR, "li#site-divinput-1.item")
     driver.execute_script("arguments[0].scrollIntoView(true);", element)
-    # Wait for and interact with the list item
     click(driver, (By.CSS_SELECTOR, "li#site-divinput-1.item"))
     print("List item clicked successfully!")
 
@@ -54,53 +53,32 @@ try:
     print("Close button clicked successfully!")
 
     time.sleep(6)
-    elements = driver.find_elements(By.CSS_SELECTOR, "td.tdhide")
-    text_content = [element.text for element in elements]
+    tdMeet_elements = driver.find_elements(By.CSS_SELECTOR, "td.tdMeet")
+    tdMeetDate_elements = driver.find_elements(By.CSS_SELECTOR, "td.tdMeetDate")
 
-    # Debug: Print all `td.tdhide` elements and their text content
-    if elements:
-        print(f"Found {len(elements)} `td.tdhide` elements!")
-        for element in elements:
-            print(element.get_attribute("outerHTML"))  # Debugging: Print HTML content
-            print(f"Extracted Text: {element.text}")  # Debugging: Print text content
-    else:
-        print("No `td.tdhide` elements found!")
+    tdMeet_texts = [element.text for element in tdMeet_elements]
+    tdMeetDate_texts = [element.text for element in tdMeetDate_elements]
 
-    # Write the extracted text to a file
-    with open("extracted_text.txt", "w", encoding="utf-8") as file:
-        for text in text_content:
-            file.write(text + "\n")
+    # Combine the information side by side
+    combined_data = zip(tdMeet_texts, tdMeetDate_texts)
 
-    print("Text extracted and saved to 'extracted_text.txt' successfully!")
-
-    elements = driver.find_elements(By.CSS_SELECTOR, "td.tdMeet")
-    text_content = [element.text for element in elements]
-
-    # Debug: Print all `td.tdhide` elements and their text content
-    if elements:
-        print(f"Found {len(elements)} `td.tdMeet` elements!")
-        for element in elements:
-            print(element.get_attribute("outerHTML"))  # Debugging: Print HTML content
-            print(f"Extracted Text: {element.text}")  # Debugging: Print text content
-    else:
-        print("No `td.tdMeet' elments found!")
-
-    # Write the extracted text to a file
+    # Write the combined text to a single file
     with open("MeetingTimes_text.txt", "w", encoding="utf-8") as file:
-        for text in text_content:
-            file.write(text + "\n")
+        file.write("td.tdMeet\t\t|\ttd.tdMeetDate\n")
+        file.write("-" * 50 + "\n")
+        for tdMeet_text, tdMeetDate_text in combined_data:
+            file.write(f"{tdMeet_text}\t\t|\t{tdMeetDate_text}\n")
 
-    print("Text extracted and saved to 'MeetingTimes_text.txt' successfully!")
+    print("Meeting times data combined and saved to 'MeetingTimes_text.txt' successfully!")
 
 except Exception as e:
     # Handle errors
     print(f"An error occurred: {e}")
 
 finally:
-    # Wait for 2 minutes before closing the browser
-    print("Waiting for 1 min before closing the browser...")
+    # Wait for 1 minute before closing the browser
+    print("Waiting for 1 minute before closing the browser...")
     time.sleep(60)
     print("Closing the browser...")
     driver.quit()
     print("Browser closed successfully.")
-
